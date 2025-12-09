@@ -19,7 +19,8 @@ class PokemonViewModel : ViewModel() {
         .build()
     private val apiService: PokeApiService = retrofit.create(PokeApiService::class.java)
 
-    // Cambiamos a PokemonDetail para tener toda la info en la lista
+    private var fullPokemonList = listOf<PokemonDetail>() // << NUEVO: Lista completa
+
     val pokemonList = MutableLiveData<List<PokemonDetail>>()
     val selectedPokemon = MutableLiveData<PokemonDetail?>()
     val isLoading = MutableLiveData<Boolean>()
@@ -35,33 +36,28 @@ class PokemonViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // 1. Obtener la lista de referencias
                 val response = apiService.getPokemonList()
 
-                // 2. Para cada referencia, obtener los detalles y la descripción en paralelo
-                val detailedPokemonList = response.results.map { pokemonRef ->
-                    async { // 'async' permite que las llamadas se hagan en paralelo
+                val detailedPokemonList = response.results.map {
+                    async {
                         try {
-                            val id = pokemonRef.getId()
+                            val id = it.getId()
                             if (id != null) {
-                                // Hacemos dos llamadas por Pokémon
                                 val detail = apiService.getPokemonDetail(id)
                                 val species = apiService.getPokemonSpecies(id)
-
-                                // Combinamos los resultados
                                 detail.description = species.getFlavorText().replace('\n', ' ')
-                                detail // Devolvemos el objeto completo
+                                detail
                             } else {
                                 null
                             }
                         } catch (e: Exception) {
-                            Log.e("PokeViewModel", "Error al obtener detalle de ${pokemonRef.name}: ${e.message}")
-                            null // Si algo falla para un Pokémon, no lo incluimos
+                            null
                         }
                     }
-                }.awaitAll().filterNotNull() // Esperamos a que todas las llamadas terminen y filtramos los nulos
+                }.awaitAll().filterNotNull()
 
-                pokemonList.value = detailedPokemonList
+                fullPokemonList = detailedPokemonList // << NUEVO: Guardar lista completa
+                pokemonList.value = fullPokemonList // << CAMBIO: Mostrar lista completa
 
             } catch (e: Exception) {
                 Log.e("PokeViewModel", "Error al obtener lista: ${e.message}")
@@ -72,7 +68,18 @@ class PokemonViewModel : ViewModel() {
         }
     }
 
-    // Ahora recibe el objeto completo, no necesita hacer llamada a la red
+    // << NUEVA FUNCIÓN DE BÚSQUEDA >>
+    fun searchPokemon(query: String?) {
+        if (query.isNullOrBlank()) {
+            pokemonList.value = fullPokemonList // Si no hay búsqueda, mostrar todos
+        } else {
+            val filteredList = fullPokemonList.filter {
+                it.name.contains(query, ignoreCase = true) || it.id.toString().contains(query)
+            }
+            pokemonList.value = filteredList
+        }
+    }
+
     fun selectPokemon(pokemon: PokemonDetail) {
         selectedPokemon.value = pokemon
     }

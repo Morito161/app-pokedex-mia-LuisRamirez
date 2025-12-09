@@ -57,13 +57,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- segunda vista que remplaza a la primera -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- Imagen del Pokémon (Coil la cargará aquí) -->
             <ImageView
                 android:id="@+id/detail_pokemon_image"
                 android:layout_width="match_parent"
@@ -76,7 +74,6 @@
                 android:contentDescription="Imagen del Pokémon"
                 tools:src="@tools:sample/avatars" />
 
-            <!-- Nombre y ID -->
             <TextView
                 android:id="@+id/detail_pokemon_name"
                 android:layout_width="0dp"
@@ -101,7 +98,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:text="ID: #1" />
 
-            <!-- Separador -->
             <View
                 android:id="@+id/separator"
                 android:layout_width="match_parent"
@@ -110,7 +106,6 @@
                 android:background="#CCCCCC"
                 app:layout_constraintTop_toBottomOf="@id/detail_pokemon_id" />
 
-            <!-- Datos de Altura -->
             <TextView
                 android:id="@+id/detail_height"
                 android:layout_width="0dp"
@@ -122,7 +117,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:text="Altura: 0.7 m" />
 
-            <!-- Datos de Peso -->
             <TextView
                 android:id="@+id/detail_weight"
                 android:layout_width="0dp"
@@ -134,11 +128,23 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:text="Peso: 6.9 kg" />
 
+            <!-- Vista para la Descripción -->
+            <TextView
+                android:id="@+id/detail_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textSize="16sp"
+                android:lineSpacingExtra="4dp"
+                app:layout_constraintTop_toBottomOf="@id/detail_weight"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="Una semilla extraña fue plantada en su espalda al nacer. La planta brota y crece con este Pokémon." />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 
-    <!-- 4. Indicador de Carga (Centrado) -->
     <ProgressBar
         android:id="@+id/loading_progress_bar"
         android:layout_width="wrap_content"
@@ -149,7 +155,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- 5. Mensaje de Error (Centrado) -->
     <TextView
         android:id="@+id/error_text_view"
         android:layout_width="0dp"
